@@ -1,0 +1,14 @@
+{
+  "name"         : "jstack",
+  "url"          : "https://github.com/RealyUniqueName/JStack",
+  "license"      : "MIT",
+  "tags"         : ["js", "stack", "callstack", "stacktrace"],
+  "description"  : "Friendly stack traces for JS target. Makes haxe.CallStack point to haxe sources.",
+  "version"      : "0.1.0",
+  "releasenote"  : "Initial release. ",
+  "classPath"    : "src",
+  "contributors" : ["RealyUniqueName"],
+  "dependencies" : {
+
+  }
+}

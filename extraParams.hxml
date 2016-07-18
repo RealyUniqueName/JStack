@@ -1,0 +1,2 @@
+--macro include('jstack')
+--macro keep('jstack.JStack')
