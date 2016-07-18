@@ -5,7 +5,7 @@ The only supported target is `js`.
 
 Works only in debug mode on js target. Does not affect your app if compiled without `-debug` flag or to some other target.
 
-In debug mode Haxe generates a source map, which is utilized by JStack using (source-map library)[https://github.com/mozilla/source-map].
+In debug mode Haxe generates a source map, which is utilized by JStack using [source-map library](https://github.com/mozilla/source-map).
 
 ## Installation
 ```haxe
