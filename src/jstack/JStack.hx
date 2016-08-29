@@ -173,4 +173,12 @@ private class StackPos
 
 }
 
+#else
+
+/**
+ * Public API stub for cases when jstack should not work.
+ */
+class JStack {
+    static public function onReady (callback:Void->Void) haxe.Timer.delay(callback, 0);
+}
 #end
