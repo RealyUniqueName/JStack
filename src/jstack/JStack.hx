@@ -150,6 +150,7 @@ class JStack {
 /**
  * Represents call stack position
  */
+@:keep
 private class StackPos
 {
     /** JS side */

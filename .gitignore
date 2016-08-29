@@ -3,3 +3,5 @@ build.hxml
 *.iml
 .idea
 lab
+.vscode
+jstack.zip
