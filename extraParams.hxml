@@ -1,2 +1,3 @@
---macro include('jstack')
+--macro include('jstack.JStack')
 --macro keep('jstack.JStack')
+--macro jstack.Tools.addInjectmetaToMain()

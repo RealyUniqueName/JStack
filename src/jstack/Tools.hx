@@ -17,8 +17,56 @@ using haxe.io.Path;
  * Macro tools
  */
 class Tools {
+#if macro
     static private inline var SOURCE_MAP_LIB_FILE = '../../js/source-map.min.js';
 
+    /**
+        Inject `json.JStack.onReady()` into app entry point, so that app will not start untill source map is ready.
+    **/
+    static public function addInjectmetaToMain() : Void 
+    {
+        if (Compiler.getDefine('display') != null) return;
+        if (Compiler.getDefine('debug') == null || Compiler.getDefine('js') == null) return;
+
+        var main : String = null;
+        var args = Sys.args();
+        for (i in 0...args.length) {
+            if(args[i] == '-main') {
+                main = args[i + 1];
+                break;
+            }
+        }
+        if (main == null) {
+            Context.warning('Failed to find entry point. Did you specify `-main` directive?', Context.currentPos());
+            return; 
+        }
+        
+        Compiler.addMetadata('@:build(jstack.Tools.injectInMain())', main);
+    }
+#end
+
+    macro static public function injectInMain() : Array<Field> 
+    {
+        var fields = Context.getBuildFields();
+        var injected = false;
+
+        for (field in fields) {
+            if (field.name != 'main') continue;
+
+            switch (field.kind) {
+                case FFun(fn):
+                    fn.expr = macro jstack.JStack.onReady(function() ${fn.expr});
+                case _: 
+                    Context.error('Failed to inject JStack in `main` function.', field.pos);
+            }
+        }
+
+        if (!injected) {
+            Context.error('Failed to find static function main.', Context.currentPos());
+        }
+
+        return fields;
+    }
 
     /**
      * Returns file name of generated output

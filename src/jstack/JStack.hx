@@ -25,7 +25,9 @@ class JStack {
 
 
     /**
-     * Invoke `callback` when source map is loaded
+     * Invoke `callback` when source map is loaded.
+     * A call to this method is autonmatically injected in `static main()` function of your app. 
+     * You don't need to use this method manually.
      */
     static public function onReady (callback:Void->Void) : Void
     {
@@ -173,12 +175,4 @@ private class StackPos
 
 }
 
-#else
-
-/**
- * Public API stub for cases when jstack should not work.
- */
-class JStack {
-    static public function onReady (callback:Void->Void) haxe.Timer.delay(callback, 0);
-}
 #end
