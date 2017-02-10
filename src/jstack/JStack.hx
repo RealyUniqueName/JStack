@@ -26,7 +26,7 @@ class JStack {
 
     /**
      * Invoke `callback` when source map is loaded.
-     * A call to this method is autonmatically injected in `static main()` function of your app. 
+     * A call to this method is automatically injected in `static main()` function of your app.
      * You don't need to use this method manually.
      */
     static public function onReady (callback:Void->Void) : Void

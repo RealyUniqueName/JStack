@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS target. Makes haxe.CallStack point to haxe sources.",
-  "version"      : "1.0.0",
-  "releasenote"  : "jstack.JStack.onReady() in automatically injected now.",
+  "version"      : "1.0.1",
+  "releasenote"  : "Fix locating entry point.",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {}

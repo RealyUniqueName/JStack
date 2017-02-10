@@ -23,10 +23,12 @@ class Tools {
     /**
         Inject `json.JStack.onReady()` into app entry point, so that app will not start untill source map is ready.
     **/
-    static public function addInjectmetaToMain() : Void 
+    static public function addInjectMetaToMain() : Void
     {
-        if (Compiler.getDefine('display') != null) return;
-        if (Compiler.getDefine('debug') == null || Compiler.getDefine('js') == null) return;
+        #if (display || !debug)
+            return;
+        #end
+        if (Context.definedValue('js') == null) return;
 
         var main : String = null;
         var args = Sys.args();
@@ -37,15 +39,15 @@ class Tools {
             }
         }
         if (main == null) {
-            Context.warning('Failed to find entry point. Did you specify `-main` directive?', Context.currentPos());
-            return; 
+            Context.warning('JStack: Failed to find entry point. Did you specify `-main` directive?', (macro {}).pos);
+            return;
         }
-        
+
         Compiler.addMetadata('@:build(jstack.Tools.injectInMain())', main);
     }
 #end
 
-    macro static public function injectInMain() : Array<Field> 
+    macro static public function injectInMain() : Array<Field>
     {
         var fields = Context.getBuildFields();
         var injected = false;
@@ -56,13 +58,14 @@ class Tools {
             switch (field.kind) {
                 case FFun(fn):
                     fn.expr = macro jstack.JStack.onReady(function() ${fn.expr});
-                case _: 
-                    Context.error('Failed to inject JStack in `main` function.', field.pos);
+                    injected = true;
+                case _:
+                    Context.error('JStack: Failed to inject JStack in `main` function.', field.pos);
             }
         }
 
         if (!injected) {
-            Context.error('Failed to find static function main.', Context.currentPos());
+            Context.error('JStack: Failed to find static function main.', (macro {}).pos);
         }
 
         return fields;
