@@ -25,10 +25,10 @@ class Tools {
     **/
     static public function addInjectMetaToMain() : Void
     {
-        #if (display || !debug)
+        #if (display || !(debug || JSTACK_FORCE))
             return;
         #end
-        if (Context.definedValue('js') == null) return;
+        if (!Context.defined('js') && !Context.defined('php7')) return;
 
         var main : String = null;
         var args = Sys.args();
