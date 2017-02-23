@@ -1,14 +1,15 @@
 package jstack;
 
-#if (js && debug)
+#if (js && (debug || JSTACK_FORCE))
 
 import haxe.CallStack;
-import haxe.Json;
+import sourcemap.SourcePos;
 import js.Lib;
 import haxe.io.Path;
 import js.Browser;
 import haxe.Http;
 
+using StringTools;
 
 /**
  * Handles source map
@@ -48,24 +49,11 @@ class JStack {
      */
     public function inject () : Void
     {
-        Tools.embedSourceMapLib();
-
-        var consumer = null;
-        if (untyped __js__("typeof window != 'undefined'")) {
-            consumer = Lib.nativeThis.sourceMap.SourceMapConsumer;
-        } else {
-            consumer = untyped module.exports.SourceMapConsumer;
-        }
-
         loadSourceMap(function (sourceMapData:String) {
-            var mapper = consumer(Json.parse(sourceMapData));
+            var mapper = new SourceMap(sourceMapData);
 
             CallStack.wrapCallSite = function (site) {
-                var pos = mapper.originalPositionFor({
-                    line: site.getLineNumber(),
-                    column: site.getColumnNumber()
-                });
-
+                var pos = mapper.originalPositionFor(site.getLineNumber(), site.getColumnNumber());
                 return new StackPos(site, pos);
             }
 
@@ -160,18 +148,15 @@ private class StackPos
     /** HX side */
     private var hx : Dynamic;
 
-    public function new (js:Dynamic, hx:Dynamic)
+    public function new (js:Dynamic, hx:SourcePos)
     {
-        if (hx.source != null) {
-            hx.source = hx.source.replace('file://', '');
-        }
         this.js = js;
         this.hx = hx;
     }
 
     public function getFunctionName () return js.getFunctionName();
-    public function getFileName () return (hx.line == null ? js.getFileName() : hx.source);
-    public function getLineNumber () return (hx.line == null ? js.getLineNumber() : hx.line);
+    public function getFileName () return (hx == null || hx.originalLine == null ? js.getFileName() : hx.source);
+    public function getLineNumber () return (hx == null || hx.originalLine == null ? js.getLineNumber() : hx.originalLine);
 
 }
 

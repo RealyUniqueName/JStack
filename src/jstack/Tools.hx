@@ -93,19 +93,15 @@ class Tools {
     }
 
 
-    /**
-     * Embeds source-map js library into compiled file
-     */
-    macro static public function embedSourceMapLib () : Expr
-    {
-        var dir = Context.currentPos().getPosInfos().file.directory();
-        var libFile = dir + '/' + SOURCE_MAP_LIB_FILE;
-        var libCode = libFile.getContent();
+    // /**
+    //  * Embeds source-map js library into compiled file
+    //  */
+    // macro static public function embedSourceMapLib () : Expr
+    // {
+    //     var dir = Context.currentPos().getPosInfos().file.directory();
+    //     var libFile = dir + '/' + SOURCE_MAP_LIB_FILE;
+    //     var libCode = libFile.getContent();
 
-        return macro untyped __js__($v{libCode});
-    }
-
-
-    public function new () {
-    }
+    //     return macro untyped __js__($v{libCode});
+    // }
 }

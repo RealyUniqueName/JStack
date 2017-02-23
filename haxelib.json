@@ -8,5 +8,7 @@
   "releasenote"  : "Fix locating entry point.",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
-  "dependencies" : {}
+  "dependencies" : {
+    "sourcemap" : ""
+  }
 }
