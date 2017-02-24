@@ -1,7 +1,7 @@
 # JStack
 
 This library automatically transforms `haxe.CallStack.callStack()`, `haxe.CallStack.exceptionStack()` and uncaught exceptions where possible to make them point at Haxe sources instead of generated js or php files.
-The only supported targets are `js` and `php7`.
+The only supported targets are `js` and `php7` (as of 2017-02-24 you need latest development version of Haxe for php7 support).
 
 Works only in debug mode or when `-D JSTACK_FORCE`.
 Does not affect your app if compiled without `-debug` and `-D JSTACK_FORCE` flags or to unsupported target.
