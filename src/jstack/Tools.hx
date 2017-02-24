@@ -29,6 +29,8 @@ class Tools {
             return;
         #end
         if (!Context.defined('js') && !Context.defined('php7')) return;
+        Compiler.define('js_source_map');
+        Compiler.define('source_map');
 
         var main : String = null;
         var args = Sys.args();

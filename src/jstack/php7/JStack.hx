@@ -5,13 +5,14 @@ import php.Global.*;
 import haxe.CallStack;
 import sourcemap.SourcePos;
 
-using StringTools;
+using Type;
 
 /**
  * Handles source map
  */
 class JStack {
     static var sourceMaps = new Map<String,SourceMap>();
+    static var mapPositionDefined : Bool = false;
 
     /**
      * Invokes initialization.
@@ -30,7 +31,10 @@ class JStack {
     @:access(haxe.CallStack)
     static public dynamic function uncaughtExceptionHandler (e:Throwable) : String {
         var stack = CallStack.makeStack(getNativeStack(e));
-        var error = e.getMessage() + CallStack.toString(stack.map(mapStackItem)) + '\n';
+        if (!mapPositionDefined) {
+            stack = stack.map(mapStackItem);
+        }
+        var error = e.getMessage() + CallStack.toString(stack) + '\n';
         return error;
     }
 
@@ -38,6 +42,14 @@ class JStack {
      * Initialization
      */
     static function init () {
+        //CallStack.exceptionStack() and CallStack.callStack();
+        var phpClassName = Boot.getPhpName(CallStack.getClassName());
+        mapPositionDefined = property_exists(phpClassName, 'mapPosition');
+        if (mapPositionDefined) {
+            Syntax.setStaticField(phpClassName, 'mapPosition', mapPosition);
+        }
+
+        //Uncaught exceptions
         var userDefined = set_exception_handler(_uncaughtExceptionHandler);
         //we have a user-defined handler, don't overwrite it.
         if (userDefined != null) set_exception_handler(userDefined);
@@ -59,16 +71,26 @@ class JStack {
     static inline function mapStackItem (item:StackItem) : StackItem {
         switch (item) {
             case FilePos(symbol, file, line):
-                var map = getSourceMap(file);
-                if (map == null) {
+                var pos = mapPosition(file, line);
+                if (pos == null) {
                     return item;
                 } else {
-                    var pos = map.originalPositionFor(line);
                     return FilePos(symbol, pos.source, pos.originalLine);
                 }
             case _:
                 return item;
         }
+    }
+
+    /**
+     * Map position in generated php file to original position in source hx file.
+     * @param file - Generated php file name.
+     * @param line - Line in generated php file name.
+     * @return SourcePos
+     */
+    static inline function mapPosition (file:String, line:Int) : Null<SourcePos> {
+        var map = getSourceMap(file);
+        return (map == null ? null : map.originalPositionFor(line));
     }
 
     /**

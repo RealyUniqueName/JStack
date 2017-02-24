@@ -1,4 +1,3 @@
--D source-map
 --macro include('jstack.JStack')
 --macro keep('jstack.JStack')
 --macro jstack.Tools.addInjectMetaToMain()
