@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "php7", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS and PHP7 targets. Makes them point to haxe sources.",
-  "version"      : "2.1.0",
-  "releasenote"  : "Support for php7 target",
+  "version"      : "2.1.1",
+  "releasenote"  : "Handle uncaught exceptions in nodejs",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {
