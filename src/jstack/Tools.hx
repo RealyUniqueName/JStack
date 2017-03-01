@@ -23,7 +23,7 @@ class Tools {
     /**
         Inject `json.JStack.onReady()` into app entry point, so that app will not start untill source map is ready.
     **/
-    static public function addInjectMetaToMain() : Void
+    static public function addInjectMetaToEntryPoint() : Void
     {
         #if (display || !(debug || JSTACK_FORCE))
             return;
@@ -32,42 +32,63 @@ class Tools {
         Compiler.define('js_source_map');
         Compiler.define('source_map');
 
-        var main : String = null;
-        var args = Sys.args();
-        for (i in 0...args.length) {
-            if(args[i] == '-main') {
-                main = args[i + 1];
-                break;
+        var entryClass : String = null;
+        var entryMethod : String = null;
+
+        if (Context.defined('JSTACK_MAIN')) {
+            var jstackMain = Context.definedValue('JSTACK_MAIN');
+
+            if (jstackMain == null || jstackMain.length == 0 || jstackMain == '1') {
+                Context.error('JSTACK_MAIN should have a value. E.g.: -D JSTACK_MAIN=my.SomeClass.entryPoint', (macro {}).pos);
+            }
+
+            var parts = jstackMain.split('.');
+            if (parts.length < 2) {
+                Context.error('JSTACK_MAIN value should have a class name and a function name. E.g.: -D JSTACK_MAIN=my.SomeClass.entryPoint', (macro {}).pos);
+            }
+            entryMethod = parts.pop();
+            entryClass = parts.join('.');
+        }
+
+        if (entryClass == null) {
+            var args = Sys.args();
+            for (i in 0...args.length) {
+                if(args[i] == '-main') {
+                    entryClass = args[i + 1];
+                    entryMethod = 'main';
+                    break;
+                }
             }
         }
-        if (main == null) {
-            Context.warning('JStack: Failed to find entry point. Did you specify `-main` directive?', (macro {}).pos);
+
+        if (entryClass == null) {
+            Context.warning('JStack: Failed to find entry point. Did you specify `-main` or `-D JSTACK_MAIN`?', (macro {}).pos);
             return;
         }
 
-        Compiler.addMetadata('@:build(jstack.Tools.injectInMain())', main);
+        Compiler.addMetadata('@:build(jstack.Tools.injectInEntryPoint("$entryMethod"))', entryClass);
     }
 #end
 
-    macro static public function injectInMain() : Array<Field>
+    macro static public function injectInEntryPoint(method:String) : Array<Field>
     {
         var fields = Context.getBuildFields();
         var injected = false;
 
         for (field in fields) {
-            if (field.name != 'main') continue;
+            if (field.name != method) continue;
 
             switch (field.kind) {
                 case FFun(fn):
                     fn.expr = macro jstack.JStack.onReady(function() ${fn.expr});
                     injected = true;
                 case _:
-                    Context.error('JStack: Failed to inject JStack in `main` function.', field.pos);
+                    Context.error('JStack: Failed to inject JStack in `$method` function.', field.pos);
             }
         }
 
         if (!injected) {
-            Context.error('JStack: Failed to find static function main.', (macro {}).pos);
+            Context.error('JStack: Failed to find entry point method "$method".', (macro {}).pos);
         }
 
         return fields;

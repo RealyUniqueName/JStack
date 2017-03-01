@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "php7", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS and PHP7 targets. Makes them point to haxe sources.",
-  "version"      : "2.1.1",
-  "releasenote"  : "Handle uncaught exceptions in nodejs",
+  "version"      : "2.2.0",
+  "releasenote"  : "Custom entry point with -D JSTACK_MAIN=my.SomeClass.entryPoint",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {

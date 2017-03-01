@@ -13,3 +13,8 @@ haxelib install jstack
 
 ## Usage
 Just add JStack to compilation with `-lib jstack` compiler flag.
+
+If you don't have `-main` in your build config, then you need to specify entry point like this:
+```
+-D JSTACK_MAIN=my.SomeClass.entryPoint
+```
