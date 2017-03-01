@@ -14,12 +14,18 @@ class JStack {
 
     /** Create instance just to invoke `inject()` */
     static var instance = new JStack();
+    /** Source map instance */
+    static var mapper : SourceMap;
     /** User-defined callback which will be invoked when sourceMap is loaded */
     static var onReadyCallback : Void->Void;
 
+    /** Native stack lines like: at /home/alex/Work/HaXe/jstack/build/js/test.js:729:22 */
+    static var stackFile = ~/^at (.+?js):([0-9]+):([0-9]+)$/;
+    /** Native stack lines like: at Object.Lab.level4 (/home/alex/Work/HaXe/jstack/build/js/test.js:70:9) */
+    static var stackFunctionFile = ~/^at (.+?) \((.+?js):([0-9]+):([0-9]+)\)$/;
+
     /** Indicates if source map is loaded */
     public var ready (default,null) : Bool = false;
-
 
     /**
      * Invoke `callback` when source map is loaded.
@@ -38,7 +44,7 @@ class JStack {
      */
     @:access(haxe.CallStack)
     static public dynamic function uncaughtExceptionHandler (e:Error) : String {
-        var stack = CallStack.getStack(e);
+        var stack = CallStack.getStack(e).map(improveStackItem);
         var error = e.message + CallStack.toString(stack) + '\n';
         return error;
     }
@@ -56,7 +62,7 @@ class JStack {
      */
     public function inject () {
         loadSourceMap(function (sourceMapData:String) {
-            var mapper = new SourceMap(sourceMapData);
+            mapper = new SourceMap(sourceMapData);
 
             CallStack.wrapCallSite = function (site) {
                 var pos = mapper.originalPositionFor(site.getLineNumber(), site.getColumnNumber());
@@ -152,6 +158,53 @@ class JStack {
     **/
     static function isNode () : Bool {
         return untyped __js__("typeof window == 'undefined'");
+    }
+
+    /**
+        Try to make a better stack.
+    **/
+    static function improveStackItem (item:StackItem) : StackItem {
+        switch (item) {
+            case Module(line) if (stackFile.match(line)):
+                var file = stackFile.matched(1);
+                if (file != currentFile()) return item;
+
+                var line = Std.parseInt(stackFile.matched(2));
+                var column = Std.parseInt(stackFile.matched(3));
+                var pos = mapper.originalPositionFor(line, column);
+
+                return FilePos(null, pos.source, pos.originalLine);
+
+            case Module(line) if (stackFunctionFile.match(line)):
+                var file = stackFunctionFile.matched(2);
+                if (file != currentFile()) return item;
+
+                var line = Std.parseInt(stackFunctionFile.matched(3));
+                var column = Std.parseInt(stackFunctionFile.matched(4));
+                var pos = mapper.originalPositionFor(line, column);
+
+                if (pos == null) return item;
+
+                var fn = stackFunctionFile.matched(1).split('.');
+                var method = fn.pop();
+                var cls = fn.join('.');
+                var methodItem = (cls != null && method != null ? Method(cls, method) : null);
+
+                return FilePos(methodItem, pos.source, pos.originalLine);
+
+            case _:
+                return item;
+        }
+    }
+
+    /**
+        Returns full name of currently being executed js file.
+    **/
+    static function currentFile () : Null<String> {
+        if (isNode()) {
+            return untyped __js__('__filename');
+        }
+        return null;
     }
 }
 
