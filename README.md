@@ -14,6 +14,20 @@ haxelib install jstack
 ## Usage
 Just add JStack to compilation with `-lib jstack` compiler flag.
 
+## Clickable positions in stack traces.
+
+If your IDE supports clickable file links in app output, you can specify a pattern for call stack entries:
+```haxe
+-D JSTACK_FORMAT=%symbol% at %file%:%line%
+//or predefined pattern for VSCode
+-D JSTACK_FORMAT=vscode
+//or predefined pattern for IntelliJ IDEA
+-D JSTACK_FORMAT=idea
+```
+![](http://i.imgur.com/OgRnQOI.gif)
+
+## Custom entry point
+
 If you don't have `-main` in your build config, then you need to specify entry point like this:
 ```
 -D JSTACK_MAIN=my.SomeClass.entryPoint

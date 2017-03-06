@@ -21,14 +21,31 @@ class Tools {
     static private inline var SOURCE_MAP_LIB_FILE = '../../js/source-map.min.js';
 
     /**
-        Inject `json.JStack.onReady()` into app entry point, so that app will not start untill source map is ready.
+        Initialization macro. To be called with `--macro`
     **/
-    static public function addInjectMetaToEntryPoint() : Void
-    {
+    static public function initialize () {
         #if (display || !(debug || JSTACK_FORCE))
             return;
         #end
         if (!Context.defined('js') && !Context.defined('php7')) return;
+
+        if (Context.defined('JSTACK_FORMAT')) {
+            if(Context.defined('js')) {
+                Compiler.addClassPath(getJstackRootDir() + 'format/js');
+            } else if(Context.defined('php7')) {
+                Compiler.addClassPath(getJstackRootDir() + 'format/php7');
+            } else {
+                throw 'Unexpected behavior';
+            }
+        }
+
+        addInjectMetaToEntryPoint();
+    }
+
+    /**
+        Inject `json.JStack.onReady()` into app entry point, so that app will not start untill source map is ready.
+    **/
+    static public function addInjectMetaToEntryPoint() : Void {
         Compiler.define('js_source_map');
         Compiler.define('source_map');
 
@@ -68,10 +85,18 @@ class Tools {
 
         Compiler.addMetadata('@:build(jstack.Tools.injectInEntryPoint("$entryMethod"))', entryClass);
     }
+
+    /**
+        Get root directory of JStack haxelib.
+    **/
+    static function getJstackRootDir () : String {
+        var toolsFile = Context.getPosInfos((macro {}).pos).file;
+        toolsFile.replace('\\', '/');
+        return toolsFile.split('/').slice(0, -3).join('/') + '/';
+    }
 #end
 
-    macro static public function injectInEntryPoint(method:String) : Array<Field>
-    {
+    macro static public function injectInEntryPoint(method:String) : Array<Field> {
         var fields = Context.getBuildFields();
         var injected = false;
 
@@ -97,34 +122,34 @@ class Tools {
     /**
      * Returns file name of generated output
      */
-    macro static public function getOutputFileName () : ExprOf<String>
-    {
+    macro static public function getOutputFileName () : ExprOf<String> {
         var file = Compiler.getOutput().withoutDirectory();
 
         return macro $v{file};
     }
 
-
     /**
      * Get source map file name for current app
      */
-    macro static public function getSourceMapFileName () : ExprOf<String>
-    {
+    macro static public function getSourceMapFileName () : ExprOf<String> {
         var file = Compiler.getOutput().withoutDirectory();
 
         return macro $v{file} + '.map';
     }
 
-
-    // /**
-    //  * Embeds source-map js library into compiled file
-    //  */
-    // macro static public function embedSourceMapLib () : Expr
-    // {
-    //     var dir = Context.currentPos().getPosInfos().file.directory();
-    //     var libFile = dir + '/' + SOURCE_MAP_LIB_FILE;
-    //     var libCode = libFile.getContent();
-
-    //     return macro untyped __js__($v{libCode});
-    // }
+    /**
+        Returns a template for formatting entries in call stack.
+        Supported placeholders: %file% %line% %symbol%
+    **/
+    macro static public function getFormat () : ExprOf<String> {
+        return switch (Context.definedValue('JSTACK_FORMAT')) {
+            case 'vscode':
+                switch (Sys.systemName()) {
+                    case 'Windows': macro 'Called from %symbol% file://%file%#%line%';
+                    case _: macro 'Called from %symbol% file://%file%:%line%';
+                }
+            case 'idea': macro '%file%:%line% in %symbol%';
+            case format: macro $v{format};
+        }
+    }
 }
