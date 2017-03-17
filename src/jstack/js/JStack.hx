@@ -150,6 +150,9 @@ class JStack {
         var error = uncaughtExceptionHandler(e);
         if(error != null && error.length > 0) {
             untyped __js__('console.log({0})', error);
+            if (isNode()) {
+                untyped __js__('process.exit(1)');
+            }
         }
     }
 
