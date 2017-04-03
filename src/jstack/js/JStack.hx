@@ -93,7 +93,8 @@ class JStack {
      * Do the job in browser environment
      */
     function loadInBrowser (callback:String->Void) {
-        var file = getCurrentDirInBrowser() + '/' + Tools.getSourceMapFileName();
+        var currDir = getCurrentDirInBrowser();
+        var file = currDir != null ? currDir + '/' + Tools.getSourceMapFileName() : Tools.getSourceMapFileName();
         var http = new Http(file);
 
         http.onError = function (error:String) {
