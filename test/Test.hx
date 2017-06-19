@@ -8,9 +8,10 @@ class Test {
 	static var pos:PosInfos;
 
 	static public function main() {
+		throwException();
 		try {
 			throwException();
-		} catch(e:Dynamic) {
+		} catch(e:Int) {
 			var fileName = new Path(pos.fileName).file;
 			for(stackItem in CallStack.exceptionStack()) {
 				switch(stackItem) {

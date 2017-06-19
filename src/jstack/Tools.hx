@@ -91,8 +91,9 @@ class Tools {
     **/
     static function getJstackRootDir () : String {
         var toolsFile = Context.getPosInfos((macro {}).pos).file;
-        toolsFile.replace('\\', '/');
-        return toolsFile.split('/').slice(0, -3).join('/') + '/';
+        toolsFile = toolsFile.replace('\\', '/');
+        var dir = toolsFile.split('/').slice(0, -3).join('/');
+        return (dir == '' ? '.' : dir) + '/';
     }
 #end
 
