@@ -24,9 +24,8 @@ class Tools {
         Initialization macro. To be called with `--macro`
     **/
     static public function initialize () {
-        #if (display || !(debug || JSTACK_FORCE))
-            return;
-        #end
+        #if (display || !(debug || JSTACK_FORCE)) return; #end
+        if (Context.defined('display') || !(Context.defined('debug') || Context.defined('JSTACK_FORCE'))) return;
         if (!Context.defined('js') && !Context.defined('php7')) return;
 
         if (Context.defined('JSTACK_FORMAT')) {
