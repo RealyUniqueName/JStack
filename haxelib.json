@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "php7", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS and PHP7 targets. Makes them point to haxe sources.",
-  "version"      : "2.3.3",
-  "releasenote"  : "Fix leaking custom CallStack implementation into classPath in some cases in display mode.",
+  "version"      : "2.3.4",
+  "releasenote"  : "Added -D JSTACK_ASYNC_ENTRY for non-blocking sourcemap loading.",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {
