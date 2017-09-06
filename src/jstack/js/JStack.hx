@@ -147,8 +147,8 @@ class JStack {
      * Actual handler used for uncaught exceptions
      * @param e -
      */
-    static function _uncaughtExceptionHandler (e:Error) {
-        var error = uncaughtExceptionHandler(e);
+    static function _uncaughtExceptionHandler (e:Dynamic) {
+        var error = uncaughtExceptionHandler(@:privateAccess CallStack.lastException);
         if(error != null && error.length > 0) {
             untyped __js__('console.log({0})', error);
             if (isNode()) {

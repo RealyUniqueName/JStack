@@ -9,7 +9,7 @@ class TestAsync {
 	static var pos:PosInfos;
 
 	static public function main():Int {
-		Timer.delay(test, 100);
+		Timer.delay(test, 500);
 		return 10;
 	}
 
