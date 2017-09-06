@@ -3,11 +3,17 @@ package;
 import haxe.io.Path;
 import haxe.PosInfos;
 import haxe.CallStack;
+import haxe.Timer;
 
-class Test {
+class TestAsync {
 	static var pos:PosInfos;
 
-	static public function main() {
+	static public function main():Int {
+		Timer.delay(test, 100);
+		return 10;
+	}
+
+	static function test() {
 		try {
 			throwException();
 		} catch(e:Int) {
@@ -25,7 +31,7 @@ class Test {
 	}
 
 	static function throwException(?pos:PosInfos) {
-		Test.pos = pos;
+		TestAsync.pos = pos;
 		throw 10;
 	}
 }

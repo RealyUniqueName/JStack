@@ -6,6 +6,7 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
+using haxe.macro.Tools;
 using haxe.macro.Context;
 using sys.io.File;
 using StringTools;
@@ -94,6 +95,29 @@ class Tools {
         var dir = toolsFile.split('/').slice(0, -3).join('/');
         return (dir == '' ? '.' : dir) + '/';
     }
+
+    static function returnsSomething(methodBody:Expr):Bool {
+        var returns = false;
+        var foundReturn = false;
+
+        function traverse(expr:Expr) {
+            if(foundReturn) return;
+            switch(expr.expr) {
+                case EReturn(null):
+                    foundReturn = true;
+                    returns = false;
+                case EReturn(_):
+                    foundReturn = true;
+                    returns = true;
+                case EFunction(_, _):
+                case _:
+                    expr.iter(traverse);
+            }
+        }
+        methodBody.iter(traverse);
+
+        return returns;
+    }
 #end
 
     macro static public function injectInEntryPoint(method:String) : Array<Field> {
@@ -105,7 +129,18 @@ class Tools {
 
             switch (field.kind) {
                 case FFun(fn):
-                    fn.expr = macro jstack.JStack.onReady(function() ${fn.expr});
+                    if(returnsSomething(fn.expr)) {
+                        #if JSTACK_ASYNC_ENTRY
+                            fn.expr = macro {
+                                jstack.JStack.onReady(function() {});
+                                @:mergeBlock ${fn.expr};
+                            }
+                        #else
+                            Context.error('JStack: If you want an entry point to return a value, add -D JSTACK_ASYNC_ENTRY to compilation flags. It will switch JStack to loading sourcemap in background without blocking an entry point execution.', field.pos);
+                        #end
+                    } else {
+                        fn.expr = macro jstack.JStack.onReady(function() ${fn.expr});
+                    }
                     injected = true;
                 case _:
                     Context.error('JStack: Failed to inject JStack in `$method` function.', field.pos);

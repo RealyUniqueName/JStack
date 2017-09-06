@@ -1,10 +1,19 @@
 -cp src
 -cp test
--main Test
 -debug
 -lib sourcemap
 -D JSTACK_FORMAT=vscode
 
 extraParams.hxml
 
+--each
+
+-main Test
 -js build/test.js
+
+--next
+
+-D JSTACK_ASYNC_ENTRY
+-main TestAsync
+-js build/test-async.js
+
