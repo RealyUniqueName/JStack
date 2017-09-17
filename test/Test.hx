@@ -8,6 +8,7 @@ class Test {
 	static var pos:PosInfos;
 
 	static public function main() {
+		testMacroIssue10();
 		try {
 			throwException();
 		} catch(e:Int) {
@@ -27,5 +28,9 @@ class Test {
 	static function throwException(?pos:PosInfos) {
 		Test.pos = pos;
 		throw 10;
+	}
+
+	macro static function testMacroIssue10() {
+		return macro {};
 	}
 }

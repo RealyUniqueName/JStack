@@ -1,8 +1,10 @@
 package haxe;
 
+#if (php7 && !macro)
 import php.*;
 
 private typedef NativeTrace = NativeIndexedArray<NativeAssocArray<Dynamic>>;
+#end
 
 /**
 	Elements return by `CallStack` methods.
@@ -16,6 +18,7 @@ enum StackItem {
 }
 
 class CallStack {
+#if (php7 && !macro)
 	/**
 		If defined this function will be used to transform call stack entries.
 		@param String - generated php file name.
@@ -121,5 +124,9 @@ class CallStack {
 
 		return result;
 	}
-
+#else
+	static public function callStack():Array<StackItem> throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
+	static public function exceptionStack():Array<StackItem> throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
+	static public function toString():String throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
+#end
 }

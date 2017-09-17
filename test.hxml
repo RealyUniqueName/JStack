@@ -13,6 +13,12 @@ extraParams.hxml
 
 --next
 
+-main Test
+-D php7
+-php build/php
+
+--next
+
 -D JSTACK_ASYNC_ENTRY
 -main TestAsync
 -js build/test-async.js
