@@ -12,7 +12,7 @@ enum StackItem {
 	Get information about the call stack.
 **/
 class CallStack {
-#if js
+#if (js || nodejs)
 	static var lastException:js.Error;
 
 	static function getStack(e:js.Error):Array<StackItem> {
@@ -102,6 +102,6 @@ class CallStack {
 #else
 	static public function callStack():Array<StackItem> throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
 	static public function exceptionStack():Array<StackItem> throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
-	static public function toString():String throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
+	static public function toString( stack : Array<StackItem> ):String throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
 #end
 }
