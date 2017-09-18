@@ -102,6 +102,6 @@ class CallStack {
 #else
 	static public function callStack():Array<StackItem> throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
 	static public function exceptionStack():Array<StackItem> throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
-	static public function toString():String throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
+	static public function toString(stack : Array<StackItem>):String throw "Not implemented. See https://github.com/RealyUniqueName/JStack/issues/10";
 #end
 }
