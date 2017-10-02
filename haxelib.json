@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "php7", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS and PHP7 targets. Makes them point to haxe sources.",
-  "version"      : "2.3.5",
-  "releasenote"  : "Fixed leaking platform-specific code into macro context.",
+  "version"      : "2.3.6",
+  "releasenote"  : "Added JSTACK_HAXE_DEV to support latest changes of php generator in Haxe development branch.",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {
