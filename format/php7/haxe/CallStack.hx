@@ -1,6 +1,6 @@
 package haxe;
 
-#if (php7 && !macro)
+#if ((php7 || JSTACK_HAXE_DEV) && !macro)
 import php.*;
 
 private typedef NativeTrace = NativeIndexedArray<NativeAssocArray<Dynamic>>;
@@ -18,7 +18,7 @@ enum StackItem {
 }
 
 class CallStack {
-#if (php7 && !macro)
+#if ((php7 || JSTACK_HAXE_DEV) && !macro)
 	/**
 		If defined this function will be used to transform call stack entries.
 		@param String - generated php file name.

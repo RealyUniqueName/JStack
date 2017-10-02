@@ -6,6 +6,8 @@ The only supported targets are `js` and `php7` (as of 2017-02-24 you need latest
 Works only in debug mode or when `-D JSTACK_FORCE`.
 Does not affect your app if compiled without `-debug` and `-D JSTACK_FORCE` flags or to unsupported target.
 
+*2017-10-02 till Haxe 4 is released* if you want to use JStack for php target with the latest development version of Haxe, add `-D JSTACK_HAXE_DEV`.
+
 ## Installation
 ```haxe
 haxelib install jstack

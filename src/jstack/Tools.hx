@@ -27,12 +27,12 @@ class Tools {
     static public function initialize () {
         #if (display || !(debug || JSTACK_FORCE)) return; #end
         if (Context.defined('display') || !(Context.defined('debug') || Context.defined('JSTACK_FORCE'))) return;
-        if (!Context.defined('js') && !Context.defined('php7')) return;
+        if (!Context.defined('js') && !Context.defined('php7') && !Context.defined('JSTACK_HAXE_DEV')) return;
 
         if (Context.defined('JSTACK_FORMAT')) {
             if(Context.defined('js')) {
                 Compiler.addClassPath(getJstackRootDir() + 'format/js');
-            } else if(Context.defined('php7')) {
+            } else if(Context.defined('php')) {
                 Compiler.addClassPath(getJstackRootDir() + 'format/php7');
             } else {
                 throw 'Unexpected behavior';
