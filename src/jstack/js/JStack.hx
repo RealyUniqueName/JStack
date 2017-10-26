@@ -40,13 +40,18 @@ class JStack {
     /**
      * Overwrite this method to handle uncaught exceptions manually.
      * Any returned value will be written to stderr.
-     * @param e - Uncaught exception.
+     * @param e - Uncaught exception.  It's `js.Error` most of the time,
+     *              but it also can be any other type if thrown outside of Haxe-generated code.
      */
     @:access(haxe.CallStack)
-    static public dynamic function uncaughtExceptionHandler (e:Error) : String {
-        var stack = CallStack.getStack(e).map(improveStackItem);
-        var error = e.message + CallStack.toString(stack) + '\n';
-        return error;
+    static public dynamic function uncaughtExceptionHandler (e:Dynamic) : String {
+        if(untyped __js__("{0} instanceof Error", e)) {
+            var stack = CallStack.getStack(e).map(improveStackItem);
+            var error = e.message + CallStack.toString(stack) + '\n';
+            return error;
+        } else {
+            return 'Uncaught exception: ' + Std.string(e);
+        }
     }
 
     function new () {
@@ -148,7 +153,7 @@ class JStack {
      * @param e -
      */
     static function _uncaughtExceptionHandler (e:Dynamic) {
-        var error = uncaughtExceptionHandler(@:privateAccess CallStack.lastException);
+        var error = uncaughtExceptionHandler(e);
         if(error != null && error.length > 0) {
             untyped __js__('console.log({0})', error);
             if (isNode()) {

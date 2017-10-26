@@ -24,7 +24,7 @@ class CallStack {
 			for (site in callsites) {
 				if (wrapCallSite != null) site = wrapCallSite(site);
 				var method = null;
-				var fullName :String = site.getFunctionName();
+				var fullName:String = site.getFunctionName();
 				if (fullName != null) {
 					var idx = fullName.lastIndexOf(".");
 					if (idx >= 0) {

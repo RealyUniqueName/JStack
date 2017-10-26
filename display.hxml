@@ -1,0 +1,10 @@
+-cp src
+-cp test
+-debug
+-lib sourcemap
+-D JSTACK_FORMAT=vscode
+
+extraParams.hxml
+
+-main Test
+-js build/test.js
