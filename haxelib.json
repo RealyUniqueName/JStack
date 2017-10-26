@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "php", "php7", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS and PHP7 targets. Makes them point to haxe sources.",
-  "version"      : "2.3.7",
-  "releasenote"  : "Fixed signature of CallStack.toString() for cases when it leaks to macro context.",
+  "version"      : "2.3.8",
+  "releasenote"  : "Improved stack handling on JS; fixed handling non-js.Error exceptions",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {
