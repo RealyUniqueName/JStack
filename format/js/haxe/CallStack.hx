@@ -1,5 +1,11 @@
 package haxe;
 
+#if js
+import jstack.js.JStack;
+#end
+
+using StringTools;
+
 enum StackItem {
 	CFunction;
 	Module( m : String );
@@ -75,7 +81,8 @@ class CallStack {
 		return jstack.Format.toString(stack);
 	}
 
-	private static function makeStack(s #if cs : cs.system.diagnostics.StackTrace #elseif hl : hl.NativeArray<hl.Bytes> #end) {
+	static var rie10 = ~/at (?:([A-Za-z0-9_. ]+)(?:.*?)\()?(.+?):([0-9]+):([0-9]+)(?:\))?$/;
+	private static function makeStack(s:Dynamic):Array<StackItem> {
 		if (s == null) {
 			return [];
 		} else if ((untyped __js__("typeof"))(s) == "string") {
@@ -83,14 +90,26 @@ class CallStack {
 			var stack : Array<String> = s.split("\n");
 			if( stack[0] == "Error" ) stack.shift();
 			var m = [];
-			var rie10 = ~/^   at ([A-Za-z0-9_. ]+) \(([^)]+):([0-9]+):([0-9]+)\)$/;
 			for( line in stack ) {
 				if( rie10.match(line) ) {
-					var path = rie10.matched(1).split(".");
-					var meth = path.pop();
+					var item = null;
+					var symbol = rie10.matched(1);
+					if(symbol != null) {
+						var path = rie10.matched(1).trim().split(".");
+						var meth = path.pop();
+						item = meth == "Anonymous function" ? LocalFunction() : meth == "Global code" ? null : Method(path.join("."),meth);
+					}
 					var file = rie10.matched(2);
 					var line = Std.parseInt(rie10.matched(3));
-					m.push(FilePos( meth == "Anonymous function" ? LocalFunction() : meth == "Global code" ? null : Method(path.join("."),meth), file, line ));
+					var column = Std.parseInt(rie10.matched(4));
+					var pos:StackPos = wrapCallSite({
+						getFileName: function() return file,
+						getLineNumber: function() return line,
+						getColumnNumber: function() return column
+					});
+					file = pos.getFileName();
+					line = pos.getLineNumber();
+					m.push(FilePos( item, file, line ));
 				} else
 					m.push(Module(StringTools.trim(line))); // A little weird, but better than nothing
 			}

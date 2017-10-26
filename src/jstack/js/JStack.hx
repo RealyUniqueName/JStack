@@ -18,6 +18,12 @@ class JStack {
     static var mapper : SourceMap;
     /** User-defined callback which will be invoked when sourceMap is loaded */
     static var onReadyCallback : Void->Void;
+    /**
+     * Full name of currently being executed js file.
+     * If JStack fails to resolve current file name, then `currentFile` will be an empty string.
+     */
+    static var currentFile(get,never):String;
+    static var _currentFile:String = null;
 
     /** Native stack lines like: at /home/alex/Work/HaXe/jstack/build/js/test.js:729:22 */
     static var stackFile = ~/^at (.+?js):([0-9]+):([0-9]+)$/;
@@ -70,7 +76,10 @@ class JStack {
             mapper = new SourceMap(sourceMapData);
 
             CallStack.wrapCallSite = function (site) {
-                var pos = mapper.originalPositionFor(site.getLineNumber(), site.getColumnNumber());
+                var pos = null;
+                if(site.getFileName() == currentFile) {
+                    pos = mapper.originalPositionFor(site.getLineNumber(), site.getColumnNumber());
+                }
                 return new StackPos(site, pos);
             }
 
@@ -176,7 +185,7 @@ class JStack {
         switch (item) {
             case Module(line) if (stackFile.match(line)):
                 var file = stackFile.matched(1);
-                if (file != currentFile()) return item;
+                if (file != currentFile) return item;
 
                 var line = Std.parseInt(stackFile.matched(2));
                 var column = Std.parseInt(stackFile.matched(3));
@@ -186,7 +195,7 @@ class JStack {
 
             case Module(line) if (stackFunctionFile.match(line)):
                 var file = stackFunctionFile.matched(2);
-                if (file != currentFile()) return item;
+                if (file != currentFile) return item;
 
                 var line = Std.parseInt(stackFunctionFile.matched(3));
                 var column = Std.parseInt(stackFunctionFile.matched(4));
@@ -206,14 +215,20 @@ class JStack {
         }
     }
 
-    /**
-        Returns full name of currently being executed js file.
-    **/
-    static function currentFile () : Null<String> {
-        if (isNode()) {
-            return untyped __js__('__filename');
+    static function get_currentFile () : String {
+        if(_currentFile == null) {
+            if (isNode()) {
+                _currentFile = untyped __js__('__filename');
+            } else {
+                var erFile = ~/\((.+?):([0-9]+):([0-9]+)\)$/;
+                if(erFile.match(new Error().stack)) {
+                    _currentFile = erFile.matched(1);
+                } else {
+                    _currentFile = '';
+                }
+            }
         }
-        return null;
+        return _currentFile;
     }
 }
 
@@ -234,7 +249,7 @@ class StackPos {
     }
 
     public function getFunctionName () return js.getFunctionName();
-    public function getFileName () return (hx == null || hx.originalLine == null ? js.getFileName() : hx.source);
+    public function getFileName () return (hx == null || hx.source == null ? js.getFileName() : hx.source);
     public function getLineNumber () return (hx == null || hx.originalLine == null ? js.getLineNumber() : hx.originalLine);
 
 }
