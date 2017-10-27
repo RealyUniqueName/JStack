@@ -81,7 +81,8 @@ class CallStack {
 		return jstack.Format.toString(stack);
 	}
 
-	static var rie10 = ~/at (?:([A-Za-z0-9_. ]+)(?:.*?)\()?(.+?):([0-9]+):([0-9]+)(?:\))?$/;
+	//TODO: detect browser and use dedicated regex for each browser
+	static var rie10 = ~/(?:at (?:([A-Za-z0-9_. ]+)(?:.*?)\()?|([A-Za-z0-9_. ]+)(?:.*?)@)(.+?):([0-9]+):([0-9]+)(?:\))?$/;
 	private static function makeStack(s:Dynamic):Array<StackItem> {
 		if (s == null) {
 			return [];
@@ -94,14 +95,15 @@ class CallStack {
 				if( rie10.match(line) ) {
 					var item = null;
 					var symbol = rie10.matched(1);
+					if(symbol == null) symbol = rie10.matched(2);
 					if(symbol != null) {
-						var path = rie10.matched(1).trim().split(".");
+						var path = symbol.trim().split(".");
 						var meth = path.pop();
 						item = meth == "Anonymous function" ? LocalFunction() : meth == "Global code" ? null : Method(path.join("."),meth);
 					}
-					var file = rie10.matched(2);
-					var line = Std.parseInt(rie10.matched(3));
-					var column = Std.parseInt(rie10.matched(4));
+					var file = rie10.matched(3);
+					var line = Std.parseInt(rie10.matched(4));
+					var column = Std.parseInt(rie10.matched(5));
 					var pos:StackPos = wrapCallSite({
 						getFileName: function() return file,
 						getLineNumber: function() return line,

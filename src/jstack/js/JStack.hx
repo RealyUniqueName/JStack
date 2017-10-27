@@ -220,11 +220,14 @@ class JStack {
             if (isNode()) {
                 _currentFile = untyped __js__('__filename');
             } else {
-                var erFile = ~/\((.+?):([0-9]+):([0-9]+)\)$/;
-                if(erFile.match(new Error().stack)) {
-                    _currentFile = erFile.matched(1);
-                } else {
-                    _currentFile = '';
+                _currentFile = '';
+                var erFile = ~/(?:\(|@)(.+?):([0-9]+):([0-9]+)(?:\))?$/;
+                var stack = new Error().stack.split('\n');
+                for(line in stack) {
+                    if(erFile.match(line)) {
+                        _currentFile = erFile.matched(1);
+                        break;
+                    }
                 }
             }
         }
