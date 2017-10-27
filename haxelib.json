@@ -4,8 +4,8 @@
   "license"      : "MIT",
   "tags"         : ["js", "php", "php7", "stack", "callstack", "stacktrace"],
   "description"  : "Friendly stack traces for JS and PHP7 targets. Makes them point to haxe sources.",
-  "version"      : "2.3.8",
-  "releasenote"  : "Improved stack handling on JS; fixed handling non-js.Error exceptions",
+  "version"      : "2.3.9",
+  "releasenote"  : "Fixed stack handling in Firefox",
   "classPath"    : "src",
   "contributors" : ["RealyUniqueName"],
   "dependencies" : {
