@@ -9,17 +9,19 @@ extraParams.hxml
 --each
 
 -main Test
--js build/test.js
+-js bin/test.js
 
 --next
 
 -main Test
 -D php7
--php build/php
+-D JSTACK_HAXE_DEV
+-php bin/php
+-D real-position
 
 --next
 
 -D JSTACK_ASYNC_ENTRY
 -main TestAsync
--js build/test-async.js
+-js bin/test-async.js
 

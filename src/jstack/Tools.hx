@@ -41,7 +41,7 @@ class Tools {
     }
 
     /**
-        Inject `json.JStack.onReady()` into app entry point, so that app will not start untill source map is ready.
+        Inject `json.JStack.onReady()` into app entry point, so that app will not start until source map is ready.
     **/
     static public function addInjectMetaToEntryPoint() : Void {
         Compiler.define('js_source_map');

@@ -34,3 +34,5 @@ If you don't have `-main` in your build config, then you need to specify entry p
 ```
 -D JSTACK_MAIN=my.SomeClass.entryPoint
 ```
+If you want an entry point to return a value, add `-D JSTACK_ASYNC_ENTRY` to compilation flags.
+It will switch JStack to loading sourcemap in background without blocking an entry point execution.

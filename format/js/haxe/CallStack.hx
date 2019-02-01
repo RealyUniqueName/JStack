@@ -9,7 +9,7 @@ using StringTools;
 enum StackItem {
 	CFunction;
 	Module( m : String );
-	FilePos( s : Null<StackItem>, file : String, line : Int );
+	FilePos( s : Null<StackItem>, file : String, line : Int #if (haxe_ver >= '4.0.0'), ?column : Int #end);
 	Method( classname : String, method : String );
 	LocalFunction( ?v : Int );
 }
