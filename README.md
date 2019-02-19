@@ -36,3 +36,7 @@ If you don't have `-main` in your build config, then you need to specify entry p
 ```
 If you want an entry point to return a value, add `-D JSTACK_ASYNC_ENTRY` to compilation flags.
 It will switch JStack to loading sourcemap in background without blocking an entry point execution.
+
+## Avoiding `process.exit` on NodeJS
+
+By default JStack invokes `process.exit(1)` on uncaught exceptions in NodeJS environment. Use `-D JSTACK_NO_SHUTDOWN` to prevent this behavior.
