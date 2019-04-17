@@ -2,6 +2,11 @@ package haxe;
 
 #if js
 import jstack.js.JStack;
+#if haxe4
+import js.lib.Error;
+#else
+import js.Error;
+#end
 #end
 
 using StringTools;
@@ -19,9 +24,9 @@ enum StackItem {
 **/
 class CallStack {
 #if js
-	static var lastException:js.Error;
+	static var lastException:Error;
 
-	static function getStack(e:js.Error):Array<StackItem> {
+	static function getStack(e:Error):Array<StackItem> {
 		if (e == null) return [];
 		// https://code.google.com/p/v8/wiki/JavaScriptStackTraceApi
 		var oldValue = (untyped Error).prepareStackTrace;
@@ -57,7 +62,7 @@ class CallStack {
 	**/
 	public static function callStack() : Array<StackItem> {
 		try {
-			throw new js.Error();
+			throw new Error();
 		} catch( e : Dynamic ) {
 			var a = getStack(e);
 			a.shift(); // remove Stack.callStack()
