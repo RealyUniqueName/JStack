@@ -2,10 +2,14 @@ package jstack.js;
 
 import haxe.CallStack;
 import sourcemap.SourcePos;
-import js.Error;
 import haxe.io.Path;
 import js.Browser;
 import haxe.Http;
+#if haxe4
+import js.lib.Error;
+#else
+import js.Error;
+#end
 
 /**
  * Handles source map
